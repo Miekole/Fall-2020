@@ -1,0 +1,4 @@
+﻿  Into1001_Ex10_FerrazzoMichael.cpp
+F:\School\1001-IntoTo\Into1001_Ex10_FerrazzoMichael\Into1001_Ex10_FerrazzoMichael\Into1001_Ex10_FerrazzoMichael.cpp(10,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+F:\School\1001-IntoTo\Into1001_Ex10_FerrazzoMichael\Into1001_Ex10_FerrazzoMichael\Into1001_Ex10_FerrazzoMichael.cpp(8,9): warning C4101: 'number': unreferenced local variable
+  Into1001_Ex10_FerrazzoMichael.vcxproj -> F:\School\1001-IntoTo\Into1001_Ex10_FerrazzoMichael\Debug\Into1001_Ex10_FerrazzoMichael.exe

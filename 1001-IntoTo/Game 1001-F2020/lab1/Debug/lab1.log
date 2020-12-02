@@ -1,0 +1,4 @@
+﻿  TheP.cpp
+F:\School\Game 1001-F2020\lab1\TheP.cpp(26,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+F:\School\Game 1001-F2020\lab1\TheP.cpp(34,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  lab1.vcxproj -> F:\School\Game 1001-F2020\lab1\Debug\week 2.exe

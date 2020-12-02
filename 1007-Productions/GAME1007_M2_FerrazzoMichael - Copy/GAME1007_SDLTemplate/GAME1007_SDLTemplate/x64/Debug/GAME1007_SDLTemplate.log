@@ -1,0 +1,8 @@
+﻿  Engine.cpp
+  Main.cpp
+  Generating Code...
+F:\School\1007-Productions\GAME1007_M0_FerrazzoMichael\GAME1007_SDLTemplate\GAME1007_SDLTemplate\Engine.cpp(67): warning C4715: 'Engine::KeyDown': not all control paths return a value
+Engine.obj : error LNK2019: unresolved external symbol IMG_Init referenced in function "private: int __cdecl Engine::Init(char const *,int,int,int,int,int)" (?Init@Engine@@AEAAHPEBDHHHHH@Z)
+Engine.obj : error LNK2019: unresolved external symbol IMG_Quit referenced in function "private: void __cdecl Engine::Clean(void)" (?Clean@Engine@@AEAAXXZ)
+Engine.obj : error LNK2019: unresolved external symbol IMG_LoadTexture referenced in function "private: int __cdecl Engine::Init(char const *,int,int,int,int,int)" (?Init@Engine@@AEAAHPEBDHHHHH@Z)
+F:\School\1007-Productions\GAME1007_M0_FerrazzoMichael\GAME1007_SDLTemplate\x64\Debug\GAME1007_SDLTemplate.exe : fatal error LNK1120: 3 unresolved externals

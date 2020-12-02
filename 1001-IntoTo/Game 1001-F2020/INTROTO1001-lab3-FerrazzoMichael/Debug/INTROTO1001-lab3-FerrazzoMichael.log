@@ -1,0 +1,4 @@
+﻿  lab3.cpp
+F:\School\Game 1001-F2020\INTROTO1001-lab3-FerrazzoMichael\lab3.cpp(13,16): warning C4101: 'tax': unreferenced local variable
+F:\School\Game 1001-F2020\INTROTO1001-lab3-FerrazzoMichael\lab3.cpp(13,9): warning C4101: 'total': unreferenced local variable
+  INTROTO1001-lab3-FerrazzoMichael.vcxproj -> F:\School\Game 1001-F2020\INTROTO1001-lab3-FerrazzoMichael\Debug\INTROTO1001-lab3-FerrazzoMichael.exe

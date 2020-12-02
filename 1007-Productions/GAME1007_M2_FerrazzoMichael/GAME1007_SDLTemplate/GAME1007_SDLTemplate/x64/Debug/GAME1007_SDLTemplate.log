@@ -1,0 +1,4 @@
+﻿  Engine.cpp
+Engine.obj : error LNK2019: unresolved external symbol IMG_Init referenced in function "private: int __cdecl Engine::Init(char const *,int,int,int,int,int)" (?Init@Engine@@AEAAHPEBDHHHHH@Z)
+Engine.obj : error LNK2019: unresolved external symbol IMG_LoadTexture referenced in function "private: int __cdecl Engine::Init(char const *,int,int,int,int,int)" (?Init@Engine@@AEAAHPEBDHHHHH@Z)
+F:\School\1007-Productions\GAME1007_M2_FerrazzoMichael\GAME1007_SDLTemplate\x64\Debug\GAME1007_SDLTemplate.exe : fatal error LNK1120: 2 unresolved externals

@@ -1,0 +1,3 @@
+﻿  mian.cpp
+C:\Users\Miekole\source\repos\Into1001_Ex8_FerrazzoMichael\Into1001_Ex8_FerrazzoMichael\mian.cpp(24,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Into1001_Ex8_FerrazzoMichael.vcxproj -> C:\Users\Miekole\source\repos\Into1001_Ex8_FerrazzoMichael\Debug\Into1001_Ex8_FerrazzoMichael.exe
