@@ -1,0 +1,3 @@
+﻿  Source.cpp
+F:\School\Fall-2020\1001-IntoTo\Into1001_LabTest4A_FerrazzoMichael\Source.cpp(199,27): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  Into1001_LabTest4A_FerrazzoMichael.vcxproj -> F:\School\Fall-2020\1001-IntoTo\Into1001_LabTest4A_FerrazzoMichael\Debug\Into1001_LabTest4A_FerrazzoMichael.exe
