@@ -1,1 +1,10 @@
-﻿
+﻿  Engine.cpp
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(101,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(105,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(115,36): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(117,36): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(118,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(172,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(176,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(180,20): warning C4018: '<': signed/unsigned mismatch
+  GAME1007_SDLTemplate.vcxproj -> F:\School\1007-Productions\GAME1007_M3_FerrazzoMichael\Debug\GAME1007_SDLTemplate.exe

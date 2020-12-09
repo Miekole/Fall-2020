@@ -31,7 +31,13 @@
     <Image Include="ship.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sonic.png">
+    <Image Include="ghost.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprite.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skyline.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

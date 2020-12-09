@@ -176,9 +176,9 @@ private: // private properties.
 
 	SDL_Texture *m_pTexture, *m_pBtexture;	// player texture
 	SDL_Texture* m_pBGTexture;	// backgroung texture
-	Sprite m_bg1, m_bg2;
+	Sprite m_player, m_bg1, m_bg2;
 
-	AnimatedSprite m_player;
+	// AnimatedSprite m_player;
 	int m_speed = 5; // In-class initialization. Not normal.
 
 	// Bullet vector;

@@ -3,12 +3,12 @@
 #define _ENGINE_H_
 
 #include <iostream>
+#include <vector>
 #include "SDL.h"
 #include "SDL_image.h"
-#include <map>
 #define FPS 60
 #define WIDTH 1024
-#define HEIGHT 768
+#define HEIGHT 640
 using namespace std;
 
 class Sprite
@@ -18,44 +18,48 @@ public:
 	SDL_Rect m_dst; // Destination rectangle.
 };
 
-class AnimatedSprite : public Sprite
+class Enemy : public Sprite
 {
 private:
 	int m_frame = 0,		// Frame Counter
-		m_frameMax = 10,		// NUmber of frames to display
-		m_speed = 100,
-		m_sprite = 0,		// which sprite of the animation to display
-		m_spriteMax = 8;	// Number of sprites in the animation
+		m_frameMax = 10;		// NUmber of frames to spawn
+
 public:
-	
-	void SetRects(SDL_Rect s, SDL_Rect d)
+	Enemy(SDL_Point spawnLoc = { 512, 384 })
+	{
+		cout << "constructing Enemy at " << &(*this) << endl;
+		//	dest rect
+		m_dst.x = spawnLoc.x;
+		m_dst.y = spawnLoc.y;
+		m_dst.h = 35;
+		m_dst.w = 35;
+
+		// source rect
+		m_src.x = 0;
+		m_src.y = 0;
+		m_src.h = 35;
+		m_src.w = 35;
+	}
+	~Enemy()
+	{
+		cout << "De-allocating Enemy at " << &(*this) << endl;
+	}
+	int SetRects(SDL_Rect s, SDL_Rect d)
 	{
 		m_src = s;
 		m_dst = d;
 	}
-	void Animate()
+	void Render(SDL_Renderer* rend)
 	{
-		//	Long way:
-		/*	if (m_frame == m_frameMax)
-			{
-				m_frame = 0;
-				m_sprite++;
-				if (m_sprite == m_spriteMax)
-				{
-					m_sprite = 0;
-				}
-				m_src.x = m_src.w * m_sprite;
-			}
-			m_frame++;*/
-
-			// Short Way:
-		if (m_frame++ % m_frameMax == 0)
-		{
-			m_src.x = m_src.w * (m_sprite++ % (m_spriteMax));
-		}
+		SDL_SetRenderDrawColor(rend, 0, 0, 200, 255);
+		SDL_RenderFillRect(rend, &m_dst);
 	}
-};
+	void Update()
+	{
+		m_dst.x -= 3;	// number is translation.
+	}
 
+};
 
 class Engine
 {
@@ -66,8 +70,13 @@ private: // private properties.
 	SDL_Window* m_pWindow;
 	SDL_Renderer* m_pRenderer;
 
-	SDL_Texture* m_pTexture;
-	AnimatedSprite m_player;
+	int m_frameCtr = 0;
+
+	SDL_Texture* m_pTexture, * m_pBGtexture, * m_pEtexture;
+	Sprite m_player, m_bg1, m_bg2;
+
+	vector<Enemy*> m_enemy;
+
 	int m_speed = 5; // In-class initialization. Not normal.
 
 private: // private method prototypes.

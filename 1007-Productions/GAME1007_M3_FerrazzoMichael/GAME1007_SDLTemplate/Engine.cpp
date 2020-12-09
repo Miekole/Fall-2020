@@ -16,7 +16,7 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 				// Initialize subsystems...
 				if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0)
 				{
-					m_pTexture = IMG_LoadTexture(m_pRenderer, "Sonic.png");
+					m_pTexture = IMG_LoadTexture(m_pRenderer, "sprite.png");
 					m_pBGTexture = IMG_LoadTexture(m_pRenderer, "background.png");
 				}
 				else return false; // Image init failed.
@@ -28,7 +28,7 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 	else return false; // initalization failed.
 	m_fps = (Uint32)round(1.0 / (double)FPS * 1000); // Converts FPS into milliseconds, e.g. 16.67
 	m_keystates = SDL_GetKeyboardState(nullptr);
-	m_player.SetRects ( {0,0,128,128}, {512,384,128,128} ); // First {} is src rectangle, and second {} destination rect
+	m_player = { {0,0,282,128}, {512,384,282,128} }; // First {} is src rectangle, and second {} destination rect
 	m_bg1 = { {0,0,1920,640}, {0,0,1920,640} };
 	m_bg2 = { {0,0,1920,640}, {1920,0,1920,640} };
 	cout << "Initialization successful!" << endl;
@@ -118,7 +118,6 @@ void Engine::Update()
 	for (int i = 0 ; i< m_bullets.size(); i++){
 		m_bullets[i]->Update();
 	}
-	m_player.Animate();
 
 
 	// check for bullets going off screen
