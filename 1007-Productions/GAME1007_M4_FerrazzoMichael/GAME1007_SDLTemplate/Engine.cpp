@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "ctime"
 
 int Engine::Init(const char* title, int xPos, int yPos, int width, int height, int flags)
 {
@@ -16,9 +17,9 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 				// Initialize subsystems...
 				if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0)
 				{
-					m_pTexture = IMG_LoadTexture(m_pRenderer, "sprite.png");
-					m_pBGTexture = IMG_LoadTexture(m_pRenderer, "background.png");
-					m_eTexture = IMG_LoadTexture(m_pRenderer, "ghost.png");
+					m_pTexture = IMG_LoadTexture(m_pRenderer, "img/sprite.png");
+					m_pBGTexture = IMG_LoadTexture(m_pRenderer, "img/background.png");
+					m_pEtexture = IMG_LoadTexture(m_pRenderer, "img/ghost.png");
 				}
 				else return false; // Image init failed.
 			}
@@ -29,9 +30,13 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 	else return false; // initalization failed.
 	m_fps = (Uint32)round(1.0 / (double)FPS * 1000); // Converts FPS into milliseconds, e.g. 16.67
 	m_keystates = SDL_GetKeyboardState(nullptr);
-	m_player = { {0,0,282,128}, {512,384,282,128} }; // First {} is src rectangle, and second {} destination rect
-	m_bg1 = { {0,0,1920,640}, {0,0,1920,640} };
-	m_bg2 = { {0,0,1920,640}, {1920,0,1920,640} };
+	m_player.SetRekts( {0,0,282,128}, {512,384,282,128} ); // First {} is src rectangle, and second {} destination rect
+	m_bg1.SetRekts( {0,0,1920,640}, {0,0,1920,640} );
+	m_bg2.SetRekts( {0,0,1920,640}, {1920,0,1920,640} );
+	for (int i = 0; i < 3; i++)
+	{
+		m_enemy.SetRekts({ 0,0,256,256 }, { 300,300,35,35 });
+	}
 	cout << "Initialization successful!" << endl;
 	m_running = true;
 	return true;
@@ -56,7 +61,7 @@ void Engine::HandleEvents()
 			if (event.key.keysym.sym == ' ')
 			{
 				// spawns bullet
-				m_bullets.push_back(new Bullet({ m_player.m_dst.x + 200, m_player.m_dst.y + 62}));
+				m_bullets.push_back(new Bullet({ m_player.GetDst()->x + 200, m_player.GetDst()->y + 62}));
 				m_bullets.shrink_to_fit();
 				cout << "New bullet vector capacity: " << m_bullets.capacity() << endl;
 			}
@@ -77,49 +82,34 @@ bool Engine::KeyDown(SDL_Scancode c)
 void Engine::Update()
 {
 	//	Scroll the BG
-	m_bg1.m_dst.x -= m_speed;
-	m_bg2.m_dst.x -= m_speed;
+	m_bg1.GetDst()->x -= m_speed;
+	m_bg2.GetDst()->x -= m_speed;
 	// Wrap the BG.
-	if (m_bg1.m_dst.x <= -1920)	// If BG 1 goes off screen
+	if (m_bg1.GetDst()->x <= -1920)	// If BG 1 goes off screen
 	{	// Bounce back to original positions
-		m_bg1.m_dst.x = 0;
-		m_bg2.m_dst.x = 1920;
-	}
-
-	if (m_frameCtr == 150)
-	{
-		m_frameCtr = 0;
-		m_enemys.push_back(new Enemy({ 1240, rand() % 550 + 100 }));
-		m_enemys.shrink_to_fit();
-		cout << "New enemy vector capacity: " << m_bullets.capacity() << endl;
-	}
-	else
-	{
-		m_frameCtr++;
-	}
-
-
-	for (int i = 0; i < m_enemys.size(); i++) {
-		m_enemys[i]->Update();
-	}
-
-	for (int i = 0; i < m_enemyBullets.size(); i++) {
-		m_enemys[i]->Update();
+		m_bg1.SetRekts({ 0,0,1920,640 }, { 0,0,1920,640 });
+		m_bg2.SetRekts({ 0,0,1920,640 }, { 1920,0,1920,640 });
 	}
 	
 	//	Parse player movement
-	if (KeyDown(SDL_SCANCODE_W) && m_player.m_dst.y > 0)
-		m_player.m_dst.y -= m_speed;
-	else if (KeyDown(SDL_SCANCODE_S) && m_player.m_dst.y < HEIGHT - m_player.m_dst.h)
-		m_player.m_dst.y += m_speed;
-	if (KeyDown(SDL_SCANCODE_A) && m_player.m_dst.x > 0)
-		m_player.m_dst.x -= m_speed / 1.5;
-	else if (KeyDown(SDL_SCANCODE_D) && m_player.m_dst.x < WIDTH - m_player.m_dst.w)
-		m_player.m_dst.x += m_speed / 1.5;
+	if (KeyDown(SDL_SCANCODE_W) && m_player.GetDst()->y > 0)
+		m_player.GetDst()->y -= m_speed;
+	else if (KeyDown(SDL_SCANCODE_S) && m_player.GetDst()->y < HEIGHT - m_player.GetDst()->h)
+		m_player.GetDst()->y += m_speed;
+	if (KeyDown(SDL_SCANCODE_A) && m_player.GetDst()->x > 0)
+		m_player.GetDst()->x -= m_speed / 1.5;
+	else if (KeyDown(SDL_SCANCODE_D) && m_player.GetDst()->x < WIDTH - m_player.GetDst()->w)
+		m_player.GetDst()->x += m_speed / 1.5;
 	for (int i = 0 ; i< m_bullets.size(); i++){
 		m_bullets[i]->Update();
 	}
 
+	m_enemy.Update();
+
+	if (m_enemy.GetDst()->x < 0)
+	{
+		m_enemy.Re
+	}
 
 	// check for bullets going off screen
 	for (unsigned i = 0; i < m_bullets.size(); i++)
@@ -130,19 +120,6 @@ void Engine::Update()
 			m_bullets[i] = nullptr;	//	wrangle your dangle
 			m_bullets.erase(m_bullets.begin() + i);
 			m_bullets.shrink_to_fit();	//	reduces capacity to size
-			break;
-		}
-	}
-
-	// check for enemys going off screen
-	for (unsigned i = 0; i < m_enemys.size(); i++)
-	{
-		if (m_enemys[i]->GetEnemy()->x <= -50)
-		{
-			delete m_enemys[i];
-			m_enemys[i] = nullptr;
-			m_enemys.erase(m_enemys.begin() + i);
-			m_enemys.shrink_to_fit();
 			break;
 		}
 	}
@@ -167,24 +144,25 @@ void Engine::Render()
 	SDL_RenderClear(m_pRenderer);
 	// Any drawing here...
 
-	SDL_RenderCopy(m_pRenderer, m_pBGtexture, &m_bg1.m_src, &m_bg1.m_dst);
-	SDL_RenderCopy(m_pRenderer, m_pBGtexture, &m_bg2.m_src, &m_bg2.m_dst);
+	SDL_RenderCopy(m_pRenderer, m_pBGTexture, m_bg1.GetSrc(), m_bg1.GetDst());
+	SDL_RenderCopy(m_pRenderer, m_pBGTexture, m_bg2.GetSrc(), m_bg2.GetDst());
+	SDL_RenderCopy(m_pRenderer, m_pEtexture, m_enemy.GetSrc(), m_enemy.GetDst());
+
+	if (m_enemy.GetDst()->x < 0)
+	{
+		SDL_RenderCopy(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst());
+	}
 
 	for (int i = 0; i < m_enemyBullets.size(); i++) {
 		m_enemyBullets[i]->Render(m_pRenderer);
-	}
-
-	for (int i = 0; i < m_enemys.size(); i++) {
-		m_enemys[i]->Render(m_pRenderer);
 	}
 
 	for (int i = 0; i < m_bullets.size(); i++) {
 		m_bullets[i]->Render(m_pRenderer);
 	}
 
-	// SDL_RenderCopy(m_pRenderer, m_pTexture, &m_player.m_src, &m_player.m_dst);
-	SDL_RenderCopyEx(m_pRenderer, m_pTexture, &m_player.m_src, &m_player.m_dst, 90.0, NULL, SDL_FLIP_NONE);
-	SDL_RenderCopyEx(m_pRenderer, m_eTexture, &m_enemy.m_src, &m_enemy.m_dst, 90.0, NULL, SDL_FLIP_NONE);
+	SDL_RenderCopy(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst());
+	//SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 90.0, NULL, SDL_FLIP_NONE);
 
 	SDL_RenderPresent(m_pRenderer); // Flip buffers - send data to window.
 }
@@ -234,13 +212,6 @@ void Engine::Clean()
 	}
 	m_bullets.clear();	//	wipe all elements
 	m_bullets.shrink_to_fit();	//	reduces capacity to size
-	for (unsigned i = 0; i < m_enemys.size(); i++)
-	{
-		delete m_enemys[i];	
-		m_enemys[i] = nullptr;
-	}
-	m_enemys.clear();	
-	m_enemys.shrink_to_fit();	
 	for (unsigned i = 0; i < m_enemyBullets.size(); i++)
 	{
 		delete m_enemyBullets[i];
@@ -252,6 +223,7 @@ void Engine::Clean()
 	SDL_DestroyWindow(m_pWindow);
 	SDL_DestroyTexture(m_pTexture);
 	SDL_DestroyTexture(m_pBGtexture);
+	SDL_DestroyTexture(m_pEtexture);
 	IMG_Quit();
 	SDL_Quit();
 }

@@ -147,11 +147,10 @@
     <ClInclude Include="Engine.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ghost.png" />
-    <Image Include="ship.png" />
-    <Image Include="background.png" />
-    <Image Include="Sonic.png" />
-    <Image Include="sprite.png" />
+    <Image Include="img\background.png" />
+    <Image Include="img\ghost.png" />
+    <Image Include="img\Sonic.png" />
+    <Image Include="img\sprite.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

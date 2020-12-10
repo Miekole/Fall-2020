@@ -13,9 +13,17 @@ using namespace std;
 
 class Sprite
 {
+protected:
+	SDL_Rect m_src; // Source rectangle.
+	SDL_Rect m_dst; // Destination rectangle.
 public:
-	SDL_Rect m_src;	//	Source rect
-	SDL_Rect m_dst;	//	Destination rect
+	void SetRekts(const SDL_Rect s, const SDL_Rect d)
+	{
+		m_src = s;
+		m_dst = d;
+	}
+	SDL_Rect* GetSrc() {return &m_src;}
+	SDL_Rect* GetDst() { return &m_dst; }
 };
 
 class EnemyBullet
@@ -53,6 +61,10 @@ public:
 		SDL_SetRenderDrawColor(rend, 0, 200, 0, 255);
 		SDL_RenderFillRect(rend, &m_enemyBullet);
 	}
+	void Respawn()
+	{
+		SetLoc({ rand() % 1024 + 1000, rand() % 752 });
+	}
 
 	SDL_Rect* GetEnemy() { return &m_enemyBullet; }
 };
@@ -86,7 +98,7 @@ public:
 
 	void Render(SDL_Renderer* rend)
 	{
-		SDL_SetRenderDrawColor(rend, 0, 0, 200, 255);
+		SDL_SetRenderDrawColor(rend, 0, 200, 0, 255);
 		SDL_RenderFillRect(rend, &m_enemy);
 	}
 	SDL_Rect* GetEnemy() { return &m_enemy; }
@@ -174,9 +186,9 @@ private: // private properties.
 
 	int m_frameCtr = 0;
 
-	SDL_Texture* m_pTexture, * m_pBGtexture, * m_eTexture;	// player texture
+	SDL_Texture *m_pTexture, *m_pBGtexture, *m_pEtexture;	// player texture
 	SDL_Texture* m_pBGTexture;	// backgroung texture
-	Sprite m_player, m_bg1, m_bg2, m_enemy;
+	Sprite m_player, m_bg1, m_bg2;
 
 	// AnimatedSprite m_player;
 	int m_speed = 5; // In-class initialization. Not normal.
@@ -184,8 +196,7 @@ private: // private properties.
 	// Bullet vector;
 	vector<Bullet*> m_bullets;
 
-	// enemy vector
-	vector<Enemy*> m_enemys;
+	Enemy m_enemy;
 
 	//enemy bullets vector
 	vector<EnemyBullet*> m_enemyBullets;

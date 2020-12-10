@@ -70,13 +70,13 @@ bool Engine::KeyDown(SDL_Scancode c)
 void Engine::Update()
 {
 	//	Scroll the BG
-	m_bg1.m_dst.x -= m_speed;
-	m_bg2.m_dst.x -= m_speed;
+	m_bg1.GetDst()->x -= m_speed;
+	m_bg2.GetDst()->x -= m_speed;
 	// Wrap the BG.
-	if (m_bg1.m_dst.x <= -1920)	// If BG 1 goes off screen
+	if (m_bg1.GetDst()->x <= -1920)	// If BG 1 goes off screen
 	{	// Bounce back to original positions
-		m_bg1.m_dst.x = 0;
-		m_bg2.m_dst.x = 1920;
+		m_bg1.GetDst()->x = 0;
+		m_bg2.GetDst()->x = 1920;
 	}
 
 	if (m_frameCtr == 150)
@@ -91,14 +91,14 @@ void Engine::Update()
 		m_frameCtr++;
 	}
 
-	if (KeyDown(SDL_SCANCODE_W) && m_player.m_dst.y > 0)
-		m_player.m_dst.y -= m_speed;
-	else if (KeyDown(SDL_SCANCODE_S) && m_player.m_dst.y < HEIGHT - m_player.m_dst.h)
-		m_player.m_dst.y += m_speed;
-	if (KeyDown(SDL_SCANCODE_A) && m_player.m_dst.x > 0)
-		m_player.m_dst.x -= m_speed;
-	else if (KeyDown(SDL_SCANCODE_D) && m_player.m_dst.x < WIDTH - m_player.m_dst.w)
-		m_player.m_dst.x += m_speed;
+	if (KeyDown(SDL_SCANCODE_W) && m_player.GetDst()->y > 0)
+		m_player.GetDst()->y -= m_speed;
+	else if (KeyDown(SDL_SCANCODE_S) && m_player.GetDst()->y < HEIGHT - m_player.GetDst()->h)
+		m_player.GetDst()->y += m_speed;
+	if (KeyDown(SDL_SCANCODE_A) && m_player.GetDst()->x > 0)
+		m_player.GetDst()->x -= m_speed;
+	else if (KeyDown(SDL_SCANCODE_D) && m_player.GetDst()->x < WIDTH - m_player.GetDst()->w)
+		m_player.GetDst()->x += m_speed;
 }
 
 void Engine::Render()
@@ -108,20 +108,13 @@ void Engine::Render()
 	// Any drawing here...
 
 	//BG render
-	SDL_RenderCopy(m_pRenderer, m_pBGtexture, &m_bg1.m_src, &m_bg1.m_dst);
-	SDL_RenderCopy(m_pRenderer, m_pBGtexture, &m_bg2.m_src, &m_bg2.m_dst);
+	SDL_RenderCopy(m_pRenderer, m_pBGtexture, m_bg1.GetSrc(), m_bg1.GetDst());
+	SDL_RenderCopy(m_pRenderer, m_pBGtexture, m_bg2.GetSrc(), m_bg2.GetDst());
 
 	//player render
-	SDL_RenderCopyEx(m_pRenderer, m_pTexture, &m_player.m_src, &m_player.m_dst, 90.0, NULL, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 90.0, NULL, SDL_FLIP_NONE);
 
-	for (int i = 0; i < m_enemy.size(); i++)
-	{
-		m_enemy[i]->m_src.x = 0;
-		m_enemy[i]->m_src.y = 0;
-
-		m_enemy[i]->m_dst.y = (rand() % 550 + 100);
-		m_enemy[i]->m_dst.x = (1240);
-	}
+	SDL_RenderCopy(m_pRenderer, m_pEtexture, m_bg2.GetSrc(), m_bg2.GetDst());
 
 	SDL_RenderPresent(m_pRenderer); // Flip buffers - send data to window.
 }

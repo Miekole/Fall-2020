@@ -13,9 +13,18 @@ using namespace std;
 
 class Sprite
 {
-public:
+protected:
 	SDL_Rect m_src; // Source rectangle.
 	SDL_Rect m_dst; // Destination rectangle.
+public:
+	Sprite(SDL_Rect s, SDL_Rect d) // non defoault constructor
+{
+		m_src = s;
+		m_dst = d;
+}
+	SDL_Rect* GetSrc() { return &m_src; }
+	SDL_Rect* GetDst() { return &m_dst; }
+
 };
 
 class Enemy : public Sprite
@@ -25,21 +34,21 @@ private:
 		m_frameMax = 10;		// NUmber of frames to spawn
 
 public:
-	Enemy(SDL_Point spawnLoc = { 512, 384 })
-	{
-		cout << "constructing Enemy at " << &(*this) << endl;
-		//	dest rect
-		m_dst.x = spawnLoc.x;
-		m_dst.y = spawnLoc.y;
-		m_dst.h = 35;
-		m_dst.w = 35;
+	//Enemy(SDL_Point spawnLoc = { 512, 384 })
+	//{
+	//	cout << "constructing Enemy at " << &(*this) << endl;
+	//	//	dest rect
+	//	m_dst.x = spawnLoc.x;
+	//	m_dst.y = spawnLoc.y;
+	//	m_dst.h = 35;
+	//	m_dst.w = 35;
 
-		// source rect
-		m_src.x = 0;
-		m_src.y = 0;
-		m_src.h = 35;
-		m_src.w = 35;
-	}
+	//	// source rect
+	//	m_src.x = 0;
+	//	m_src.y = 0;
+	//	m_src.h = 35;
+	//	m_src.w = 35;
+	//}
 	~Enemy()
 	{
 		cout << "De-allocating Enemy at " << &(*this) << endl;
@@ -75,6 +84,7 @@ private: // private properties.
 	SDL_Texture* m_pTexture, * m_pBGtexture, * m_pEtexture;
 	Sprite m_player, m_bg1, m_bg2;
 
+	//Enemy m_enemy[5];
 	vector<Enemy*> m_enemy;
 
 	int m_speed = 5; // In-class initialization. Not normal.

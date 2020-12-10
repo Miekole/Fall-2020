@@ -28,19 +28,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ship.png">
+    <Image Include="img\background.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Sonic.png">
+    <Image Include="img\ghost.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="background.png">
+    <Image Include="img\Sonic.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="sprite.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="ghost.png">
+    <Image Include="img\sprite.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
