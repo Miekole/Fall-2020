@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="img\background.png" />
+    <Image Include="img\bullet.png" />
     <Image Include="img\ghost.png" />
     <Image Include="img\Sonic.png" />
     <Image Include="img\sprite.png" />

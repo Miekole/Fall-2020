@@ -61,10 +61,6 @@ public:
 		SDL_SetRenderDrawColor(rend, 0, 200, 0, 255);
 		SDL_RenderFillRect(rend, &m_enemyBullet);
 	}
-	void Respawn()
-	{
-		SetLoc({ rand() % 1024 + 1000, rand() % 752 });
-	}
 
 	SDL_Rect* GetEnemy() { return &m_enemyBullet; }
 };
@@ -76,13 +72,11 @@ private:
 		m_frameMax = 180;	// NUmber of frames to display
 	SDL_Rect m_enemy;		// single rect for enemy
 public:
-	Enemy(SDL_Point spawnLoc = { 512, 384 })
+	Enemy()
 	{
 			cout << "constructing Enemy at " << &(*this) << endl;
-			m_enemy.x = spawnLoc.x;
-			m_enemy.y = spawnLoc.y;
-			m_enemy.h = 35;
-			m_enemy.w = 35;
+			m_src = { 0,0,256,256 };
+			m_dst = { 0,0,50,50 };
 	}
 
 	~Enemy()
@@ -90,16 +84,26 @@ public:
 		cout << "De-allocating Enemy at " << &(*this) << endl;
 	}
 
+	void SetLoc(SDL_Point newloc)
+	{
+		m_dst.x = newloc.x;
+		m_dst.y = newloc.y;
+	}
 
 	void Update()
 	{
-		m_enemy.x -= 3;	// number is translation.
+		m_dst.x -= 3;	// number is translation.
 	}
 
 	void Render(SDL_Renderer* rend)
 	{
 		SDL_SetRenderDrawColor(rend, 0, 200, 0, 255);
 		SDL_RenderFillRect(rend, &m_enemy);
+	}
+
+	void Respawn()
+	{
+		SetLoc({ rand() % 1024 + 1024, rand() % 600 + 40 });
 	}
 	SDL_Rect* GetEnemy() { return &m_enemy; }
 };
@@ -112,10 +116,12 @@ public:
 	Bullet(SDL_Point spawnLoc = {512, 384}) // non-default constructor
 	{
 		cout << "constructing bullet at " << &(*this) << endl;
-		this->m_rect.x = spawnLoc.x;	//this-> is optional
-		this->m_rect.y = spawnLoc.y;	//this-> is optional
-		this->m_rect.w = 8;
-		this->m_rect.h = 8;
+		//this->m_rect.x = spawnLoc.x;	//this-> is optional
+		//this->m_rect.y = spawnLoc.y;	//this-> is optional
+		//this->m_rect.w = 8;
+		//this->m_rect.h = 8;
+		m_src = { 0,0,280,210 };
+		m_dst = { spawnLoc.x, spawnLoc.y, 25, 25 };
 	}
 	~Bullet()
 	{
@@ -123,17 +129,16 @@ public:
 	}
 	void SetLoc(SDL_Point loc)
 	{
-		m_rect.x = loc.x;
-		m_rect.y = loc.y;
+		m_dst.x = loc.x;
+		m_dst.y = loc.y;
 	}
 	void Update()
 	{
-		this->m_rect.x += 5;	// number is translation.
+		this->m_dst.x += 5;	// number is translation.
 	}
 	void Render(SDL_Renderer* rend)
 	{
 		SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);
-		SDL_RenderFillRect(rend, &m_rect);
 	}
 	SDL_Rect* GetRekt() { return &m_rect; }
 };
@@ -186,8 +191,7 @@ private: // private properties.
 
 	int m_frameCtr = 0;
 
-	SDL_Texture *m_pTexture, *m_pBGtexture, *m_pEtexture;	// player texture
-	SDL_Texture* m_pBGTexture;	// backgroung texture
+	SDL_Texture *m_pTexture, *m_pBGtexture, *m_pEtexture, *m_pBtexture;
 	Sprite m_player, m_bg1, m_bg2;
 
 	// AnimatedSprite m_player;
@@ -196,7 +200,7 @@ private: // private properties.
 	// Bullet vector;
 	vector<Bullet*> m_bullets;
 
-	Enemy m_enemy;
+	Enemy m_enemy[3];
 
 	//enemy bullets vector
 	vector<EnemyBullet*> m_enemyBullets;

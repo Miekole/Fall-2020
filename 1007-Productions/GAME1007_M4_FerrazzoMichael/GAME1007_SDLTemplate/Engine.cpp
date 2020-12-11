@@ -18,8 +18,9 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 				if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) != 0)
 				{
 					m_pTexture = IMG_LoadTexture(m_pRenderer, "img/sprite.png");
-					m_pBGTexture = IMG_LoadTexture(m_pRenderer, "img/background.png");
+					m_pBGtexture = IMG_LoadTexture(m_pRenderer, "img/background.png");
 					m_pEtexture = IMG_LoadTexture(m_pRenderer, "img/ghost.png");
+					m_pBtexture = IMG_LoadTexture(m_pRenderer, "img/bullet.png");
 				}
 				else return false; // Image init failed.
 			}
@@ -30,12 +31,12 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 	else return false; // initalization failed.
 	m_fps = (Uint32)round(1.0 / (double)FPS * 1000); // Converts FPS into milliseconds, e.g. 16.67
 	m_keystates = SDL_GetKeyboardState(nullptr);
-	m_player.SetRekts( {0,0,282,128}, {512,384,282,128} ); // First {} is src rectangle, and second {} destination rect
+	m_player.SetRekts( {0,0,282,128}, {50,350,282,128} ); // First {} is src rectangle, and second {} destination rect
 	m_bg1.SetRekts( {0,0,1920,640}, {0,0,1920,640} );
 	m_bg2.SetRekts( {0,0,1920,640}, {1920,0,1920,640} );
 	for (int i = 0; i < 3; i++)
 	{
-		m_enemy.SetRekts({ 0,0,256,256 }, { 300,300,35,35 });
+		m_enemy[i].Respawn();
 	}
 	cout << "Initialization successful!" << endl;
 	m_running = true;
@@ -104,17 +105,46 @@ void Engine::Update()
 		m_bullets[i]->Update();
 	}
 
-	m_enemy.Update();
+	// enemy update
+	for (int x = 0; x < 3; x++) {
+		m_enemy[x].Update();
+	}
 
-	if (m_enemy.GetDst()->x < 0)
+	
+	// bullet hit enemy
+	/*for (int x = 0; x < 3; x++) {
+		for (int i = 0; i < m_bullets.size(); i++) 
+		{
+			if (SDL_HasIntersection(m_bullets[i]->GetDst(), m_enemy[x].GetDst()))
+			{
+				cout << "hit!\n";
+				m_enemy[x].Respawn();
+			}
+		}
+	}*/
+
+	// check for enemy going off screen
+	for (int x = 0; x < 3; x++) 
 	{
-		m_enemy.Re
+		if (m_enemy[x].GetDst()->x <= 0)
+		{
+			m_enemy[x].Respawn();
+		}
+
+		for (int i = 0; i < m_bullets.size(); i++)
+		{
+			if (SDL_HasIntersection(m_bullets[i]->GetDst(), m_enemy[x].GetDst()))
+			{
+				cout << "hit!\n";
+				m_enemy[x].Respawn();
+			}
+		}
 	}
 
 	// check for bullets going off screen
 	for (unsigned i = 0; i < m_bullets.size(); i++)
 	{
-		if (m_bullets[i]->GetRekt()->x >= 1024)
+		if (m_bullets[i]->GetDst()->x >= 1024)
 		{
 			delete m_bullets[i];	// flag for reallocation
 			m_bullets[i] = nullptr;	//	wrangle your dangle
@@ -144,13 +174,12 @@ void Engine::Render()
 	SDL_RenderClear(m_pRenderer);
 	// Any drawing here...
 
-	SDL_RenderCopy(m_pRenderer, m_pBGTexture, m_bg1.GetSrc(), m_bg1.GetDst());
-	SDL_RenderCopy(m_pRenderer, m_pBGTexture, m_bg2.GetSrc(), m_bg2.GetDst());
-	SDL_RenderCopy(m_pRenderer, m_pEtexture, m_enemy.GetSrc(), m_enemy.GetDst());
+	SDL_RenderCopy(m_pRenderer, m_pBGtexture, m_bg1.GetSrc(), m_bg1.GetDst());
+	SDL_RenderCopy(m_pRenderer, m_pBGtexture, m_bg2.GetSrc(), m_bg2.GetDst());
 
-	if (m_enemy.GetDst()->x < 0)
-	{
-		SDL_RenderCopy(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst());
+	// render enemy
+	for (int i = 0; i < 3; i++) {
+		SDL_RenderCopyEx(m_pRenderer, m_pEtexture, m_enemy[i].GetSrc(), m_enemy[i].GetDst(), 90, 0 ,SDL_FLIP_NONE);
 	}
 
 	for (int i = 0; i < m_enemyBullets.size(); i++) {
@@ -158,10 +187,10 @@ void Engine::Render()
 	}
 
 	for (int i = 0; i < m_bullets.size(); i++) {
-		m_bullets[i]->Render(m_pRenderer);
+		SDL_RenderCopyEx(m_pRenderer, m_pBtexture, m_bullets[i]->GetSrc(), m_bullets[i]->GetDst(), 0, 0, SDL_FLIP_HORIZONTAL);
 	}
 
-	SDL_RenderCopy(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst());
+	SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 90, 0, SDL_FLIP_NONE);
 	//SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 90.0, NULL, SDL_FLIP_NONE);
 
 	SDL_RenderPresent(m_pRenderer); // Flip buffers - send data to window.

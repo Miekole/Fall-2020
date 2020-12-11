@@ -1,9 +1,10 @@
 ﻿  Engine.cpp
-F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(100,40): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
-F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(102,40): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
-F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(103,20): warning C4018: '<': signed/unsigned mismatch
-F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(156,20): warning C4018: '<': signed/unsigned mismatch
-F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(160,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(101,40): warning C4244: '-=': conversion from 'double' to 'int', possible loss of data
+F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(103,40): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(104,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(134,21): warning C4018: '<': signed/unsigned mismatch
+F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(185,20): warning C4018: '<': signed/unsigned mismatch
+F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\GAME1007_SDLTemplate\Engine.cpp(189,20): warning C4018: '<': signed/unsigned mismatch
   Main.cpp
   Generating Code...
   GAME1007_SDLTemplate.vcxproj -> F:\School\Fall-2020\1007-Productions\GAME1007_M4_FerrazzoMichael\Debug\GAME1007_SDLTemplate.exe
