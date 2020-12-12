@@ -70,13 +70,14 @@ class Enemy : public Sprite
 private:
 	int m_frame = 0,		// Frame Counter
 		m_frameMax = 180;	// NUmber of frames to display
+	int speed = 1;
 	SDL_Rect m_enemy;		// single rect for enemy
 public:
-	Enemy()
+	Enemy(SDL_Point spawnLoc = { 1250, 384, })
 	{
 			cout << "constructing Enemy at " << &(*this) << endl;
 			m_src = { 0,0,256,256 };
-			m_dst = { 0,0,50,50 };
+			m_dst = { spawnLoc.x, spawnLoc.y,100,100 };
 	}
 
 	~Enemy()
@@ -103,9 +104,9 @@ public:
 
 	void Respawn()
 	{
-		SetLoc({ rand() % 1024 + 1024, rand() % 600 + 40 });
+
 	}
-	SDL_Rect* GetEnemy() { return &m_enemy; }
+	SDL_Rect* GetEnemy() { return &m_dst; }
 };
 
 class Bullet : public Sprite
@@ -134,7 +135,7 @@ public:
 	}
 	void Update()
 	{
-		this->m_dst.x += 5;	// number is translation.
+		this->m_dst.x += 20;	// number is translation.
 	}
 	void Render(SDL_Renderer* rend)
 	{
@@ -190,6 +191,7 @@ private: // private properties.
 	SDL_Renderer* m_pRenderer;
 
 	int m_frameCtr = 0;
+	bool alive = 1;
 
 	SDL_Texture *m_pTexture, *m_pBGtexture, *m_pEtexture, *m_pBtexture;
 	Sprite m_player, m_bg1, m_bg2;
@@ -200,7 +202,7 @@ private: // private properties.
 	// Bullet vector;
 	vector<Bullet*> m_bullets;
 
-	Enemy m_enemy[3];
+	vector<Enemy*> m_enemy;
 
 	//enemy bullets vector
 	vector<EnemyBullet*> m_enemyBullets;

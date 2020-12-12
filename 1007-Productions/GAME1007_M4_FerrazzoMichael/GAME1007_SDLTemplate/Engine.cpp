@@ -31,13 +31,9 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 	else return false; // initalization failed.
 	m_fps = (Uint32)round(1.0 / (double)FPS * 1000); // Converts FPS into milliseconds, e.g. 16.67
 	m_keystates = SDL_GetKeyboardState(nullptr);
-	m_player.SetRekts( {0,0,282,128}, {50,350,282,128} ); // First {} is src rectangle, and second {} destination rect
+	m_player.SetRekts( {0,0,72,126}, {50,350,72,126} ); // First {} is src rectangle, and second {} destination rect
 	m_bg1.SetRekts( {0,0,1920,640}, {0,0,1920,640} );
 	m_bg2.SetRekts( {0,0,1920,640}, {1920,0,1920,640} );
-	for (int i = 0; i < 3; i++)
-	{
-		m_enemy[i].Respawn();
-	}
 	cout << "Initialization successful!" << endl;
 	m_running = true;
 	return true;
@@ -59,10 +55,10 @@ void Engine::HandleEvents()
 			m_running = false;
 			break;
 		case SDL_KEYUP:
-			if (event.key.keysym.sym == ' ')
+			if (event.key.keysym.sym == ' ' && alive == true)
 			{
 				// spawns bullet
-				m_bullets.push_back(new Bullet({ m_player.GetDst()->x + 200, m_player.GetDst()->y + 62}));
+				m_bullets.push_back(new Bullet({ m_player.GetDst()->x + 75, m_player.GetDst()->y + 56}));
 				m_bullets.shrink_to_fit();
 				cout << "New bullet vector capacity: " << m_bullets.capacity() << endl;
 			}
@@ -101,43 +97,79 @@ void Engine::Update()
 		m_player.GetDst()->x -= m_speed / 1.5;
 	else if (KeyDown(SDL_SCANCODE_D) && m_player.GetDst()->x < WIDTH - m_player.GetDst()->w)
 		m_player.GetDst()->x += m_speed / 1.5;
+
+	// enemy spawn
+	if (m_frameCtr == 150)
+	{
+		m_frameCtr = 0;
+		m_enemy.push_back(new Enemy({1100, rand() % 540 + 100 }));
+		m_enemy.shrink_to_fit();
+		cout << "New enemy vector capacity: " << m_enemy.capacity() << endl;
+	}
+	else
+	{
+		m_frameCtr++;
+	}
+
+	// bullet update
 	for (int i = 0 ; i< m_bullets.size(); i++){
 		m_bullets[i]->Update();
 	}
 
 	// enemy update
-	for (int x = 0; x < 3; x++) {
-		m_enemy[x].Update();
+	for (int x = 0; x < m_enemy.size(); x++){
+		m_enemy[x]->Update();
 	}
 
-	
-	// bullet hit enemy
-	/*for (int x = 0; x < 3; x++) {
-		for (int i = 0; i < m_bullets.size(); i++) 
-		{
-			if (SDL_HasIntersection(m_bullets[i]->GetDst(), m_enemy[x].GetDst()))
-			{
-				cout << "hit!\n";
-				m_enemy[x].Respawn();
-			}
-		}
-	}*/
-
 	// check for enemy going off screen
-	for (int x = 0; x < 3; x++) 
+	for (int x = 0; x < m_enemy.size(); x++)
 	{
-		if (m_enemy[x].GetDst()->x <= 0)
+		if (m_enemy[x]->GetDst()->x < -100)
 		{
-			m_enemy[x].Respawn();
+			delete m_enemy[x];	// flag for reallocation
+			m_enemy[x] = nullptr;	//	wrangle your dangle
+			m_enemy.erase(m_enemy.begin() + x);
+			m_enemy.shrink_to_fit();	//	reduces capacity to size
+			break;
 		}
+	}
 
-		for (int i = 0; i < m_bullets.size(); i++)
+	// enemy shooting
+	for (int x = 0; x < m_enemy.size(); x++)
+	{
+		if (m_frameCtr % 50 == 0)
 		{
-			if (SDL_HasIntersection(m_bullets[i]->GetDst(), m_enemy[x].GetDst()))
-			{
+			m_enemyBullets.push_back(new EnemyBullet({}));
+			m_enemyBullets.shrink_to_fit();
+			cout << "New enemy bullet vector capacity: " << m_enemyBullets.capacity() << endl;
+		}
+	}
+
+	// bullet hit enemy
+	for (int x = 0; x < m_enemy.size(); x++){
+		for (int i = 0; i < m_bullets.size(); i++){
+			if (SDL_HasIntersection(m_bullets[i]->GetDst(), m_enemy[x]->GetDst())){
 				cout << "hit!\n";
-				m_enemy[x].Respawn();
+				//delete enemy
+				delete m_enemy[x];	// flag for reallocation
+				m_enemy[x] = nullptr;	//	wrangle your dangle
+				m_enemy.erase(m_enemy.begin() + x);
+				m_enemy.shrink_to_fit();	//	reduces capacity to size
+				//delete bullet
+				delete m_bullets[i];
+				m_bullets[i] = nullptr;
+				m_bullets.erase(m_bullets.begin() + i);
+				m_bullets.shrink_to_fit();
+				break;
 			}
+		}
+	}
+
+	// enemy hit player
+	for (int x = 0; x < m_enemy.size(); x++) {
+		if (SDL_HasIntersection(m_enemy[x]->GetDst(), m_player.GetDst())){
+			SDL_DestroyTexture(m_pTexture);
+			alive = false;
 		}
 	}
 
@@ -178,8 +210,9 @@ void Engine::Render()
 	SDL_RenderCopy(m_pRenderer, m_pBGtexture, m_bg2.GetSrc(), m_bg2.GetDst());
 
 	// render enemy
-	for (int i = 0; i < 3; i++) {
-		SDL_RenderCopyEx(m_pRenderer, m_pEtexture, m_enemy[i].GetSrc(), m_enemy[i].GetDst(), 90, 0 ,SDL_FLIP_NONE);
+	for (int x = 0; x < m_enemy.size(); x++)
+	{
+		SDL_RenderCopyEx(m_pRenderer, m_pEtexture, m_enemy[x]->GetSrc(), m_enemy[x]->GetDst(), 0, 0 ,SDL_FLIP_NONE);
 	}
 
 	for (int i = 0; i < m_enemyBullets.size(); i++) {
@@ -248,6 +281,13 @@ void Engine::Clean()
 	}
 	m_enemyBullets.clear();
 	m_enemyBullets.shrink_to_fit();
+	for (unsigned x = 0; x < m_enemy.size(); x++)
+	{
+		delete m_enemy[x];
+		m_enemy[x] = nullptr;	
+	}
+	m_enemy.clear();
+	m_enemy.shrink_to_fit();
 	SDL_DestroyRenderer(m_pRenderer);
 	SDL_DestroyWindow(m_pWindow);
 	SDL_DestroyTexture(m_pTexture);
