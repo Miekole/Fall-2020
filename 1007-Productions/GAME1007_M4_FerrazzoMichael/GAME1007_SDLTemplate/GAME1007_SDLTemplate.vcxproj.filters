@@ -34,14 +34,40 @@
     <Image Include="img\ghost.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="img\Sonic.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="img\sprite.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="img\bullet.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="img\FireBall.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="img\bottleCap.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="img\explosion.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="aud\die1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="aud\enemyDie1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="aud\enemyDie2.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="aud\shoot1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="aud\shoot2.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="aud\FightTheme.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

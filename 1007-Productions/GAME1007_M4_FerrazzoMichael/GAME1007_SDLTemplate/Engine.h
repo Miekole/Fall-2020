@@ -6,6 +6,7 @@
 #include <vector>
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_mixer.h"
 #define FPS 60
 #define WIDTH 1024
 #define HEIGHT 640
@@ -26,34 +27,34 @@ public:
 	SDL_Rect* GetDst() { return &m_dst; }
 };
 
-class EnemyBullet
+class EnemyBullet : public Sprite
 {
 private:
+	int m_frame = 0,		// Frame Counter
+		m_frameMax = 180;	// NUmber of frames to display
 	SDL_Rect m_enemyBullet;
 public:
-	EnemyBullet(SDL_Point spawnLoc = { 512, 384 })
+	EnemyBullet(SDL_Point spawnLoc = { 1512, 384 })
 	{
 		cout << "constructing Enemy Bullet at " << &(*this) << endl;
-		m_enemyBullet.x = spawnLoc.x;
-		m_enemyBullet.y = spawnLoc.y;
-		m_enemyBullet.h = 8;
-		m_enemyBullet.w = 8;
+		m_src = { 0,0,240,190 };
+		m_dst = { spawnLoc.x, spawnLoc.y, 75, 50 };
 	}
 
 	~EnemyBullet()
 	{
-		cout << "De-allocating Enemy at " << &(*this) << endl;
+		cout << "De-allocating Enemy Bullet at " << &(*this) << endl;
 	}
 
 	void SetLoc(SDL_Point loc)
 	{
-		m_enemyBullet.x = loc.x;
-		m_enemyBullet.y = loc.y;
+		m_dst.x = loc.x;
+		m_dst.y = loc.y;
 	}
 
 	void Update()
 	{
-		m_enemyBullet.x -= 5;	// number is translation.
+		m_dst.x -= 14;	// number is translation.
 	}
 
 	void Render(SDL_Renderer* rend)
@@ -102,9 +103,8 @@ public:
 		SDL_RenderFillRect(rend, &m_enemy);
 	}
 
-	void Respawn()
+	void Shoot()
 	{
-
 	}
 	SDL_Rect* GetEnemy() { return &m_dst; }
 };
@@ -121,8 +121,8 @@ public:
 		//this->m_rect.y = spawnLoc.y;	//this-> is optional
 		//this->m_rect.w = 8;
 		//this->m_rect.h = 8;
-		m_src = { 0,0,280,210 };
-		m_dst = { spawnLoc.x, spawnLoc.y, 25, 25 };
+		m_src = { 0,0,212,78 };
+		m_dst = { spawnLoc.x, spawnLoc.y, 23, 10 };
 	}
 	~Bullet()
 	{
@@ -148,9 +148,9 @@ class AnimatedSprite : public Sprite
 {
 private:
 	int m_frame = 0,		// Frame Counter
-		m_frameMax = 10,		// NUmber of frames to display
+		m_frameMax = 3,		// NUmber of frames to display
 		m_sprite = 0,		// which sprite of the animation to display
-		m_spriteMax = 8;	// Number of sprites in the animation
+		m_spriteMax = 10;	// Number of sprites in the animation
 public:
 	void SetRects(SDL_Rect s, SDL_Rect d)
 	{
@@ -160,23 +160,60 @@ public:
 	void Animate()
 	{
 	//	Long way:
-	/*	if (m_frame == m_frameMax)
+		if (m_frame == m_frameMax)
 		{
 			m_frame = 0;
 			m_sprite++;
 			if (m_sprite == m_spriteMax)
 			{
-				m_sprite = 0;
+				//m_sprite = 0;
 			}
 			m_src.x = m_src.w * m_sprite;
 		}
-		m_frame++;*/
+		m_frame++;
 
 		// Short Way:
-		if (m_frame++ % m_frameMax == 0)
+		/*if (m_frame++ % m_frameMax == 0)
 		{
 			m_src.x = m_src.w * (m_sprite++ % (m_spriteMax));
-		}
+		}*/
+	}
+	void ResetSprite()
+	{
+		m_spriteMax = 0;
+	}
+};
+
+class Obstacle : public Sprite
+{
+private:
+	int speed = 1;
+public:
+	double angle = 0.0;
+	Obstacle(SDL_Point spawnLoc = { 1250, 384, })
+	{
+		cout << "constructing Bottle Cap at " << &(*this) << endl;
+		m_src = { 0,0,437,437 };
+		m_dst = { spawnLoc.x, spawnLoc.y,100,100 };
+	}
+	~Obstacle()
+	{
+		cout << "De-allocating Bottle Cap at " << &(*this) << endl;
+	}
+	void SetLoc(SDL_Point newloc)
+	{
+		m_dst.x = newloc.x;
+		m_dst.y = newloc.y;
+	}
+	void Update()
+	{
+		m_dst.x -= 5;
+		angle += speed;
+	}
+	void jump()
+	{
+		speed = (1 + rand() % 20);
+		SetLoc({ 1250, rand() % 500 + 100 });
 	}
 };
 
@@ -193,19 +230,37 @@ private: // private properties.
 	int m_frameCtr = 0;
 	bool alive = 1;
 
-	SDL_Texture *m_pTexture, *m_pBGtexture, *m_pEtexture, *m_pBtexture;
-	Sprite m_player, m_bg1, m_bg2;
+	// sound effect obj
+	Mix_Chunk* m_shoot;
+	Mix_Chunk* m_death;
+	Mix_Chunk* m_eShoot;
+	Mix_Chunk* m_eDeath;
+	// Music Track obj
+	Mix_Music* m_music;
 
-	// AnimatedSprite m_player;
+	SDL_Texture *m_pTexture,
+				*m_pBGtexture,
+				*m_pEtexture,
+				*m_pBtexture,
+				*m_pEBtexture,
+				*m_pOtexture,
+				*m_pEXtexture;
+
+	Sprite m_player, m_bg1, m_bg2;
+	AnimatedSprite m_explode;
 	int m_speed = 5; // In-class initialization. Not normal.
 
 	// Bullet vector;
 	vector<Bullet*> m_bullets;
-
+	 
+	// Enemy vectors
 	vector<Enemy*> m_enemy;
 
-	//enemy bullets vector
+	// Enemy bullets vector
 	vector<EnemyBullet*> m_enemyBullets;
+
+	// Obsticle
+	vector<Obstacle*> m_obsticle;
 
 private: // private method prototypes.
 	int Init(const char* title, int xPos, int yPos, int width, int height, int flags);

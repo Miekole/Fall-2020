@@ -21,8 +21,25 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 					m_pBGtexture = IMG_LoadTexture(m_pRenderer, "img/background.png");
 					m_pEtexture = IMG_LoadTexture(m_pRenderer, "img/ghost.png");
 					m_pBtexture = IMG_LoadTexture(m_pRenderer, "img/bullet.png");
+					m_pEBtexture = IMG_LoadTexture(m_pRenderer, "img/FireBall.png");
+					m_pOtexture = IMG_LoadTexture(m_pRenderer, "img/bottleCap.png");
+					m_pEXtexture = IMG_LoadTexture(m_pRenderer, "img/explosion.png");
 				}
 				else return false; // Image init failed.
+				if (Mix_Init(MIX_INIT_MP3) != 0)
+				{
+					// Configure Mixer
+					Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 2048);
+					Mix_AllocateChannels(16);
+
+					// Load Sound
+					m_shoot = Mix_LoadWAV("aud/shoot1.wav");
+					m_death = Mix_LoadWAV("aud/die1.wav");
+					m_eShoot = Mix_LoadWAV("aud/shoot2.wav");
+					m_eDeath = Mix_LoadWAV("aud/enemyDie2.wav");
+					m_music = Mix_LoadMUS("aud/FightTheme.mp3");
+				}
+				else return false; // Mixer init failed.
 			}
 			else return false; // Renderer creation failed.
 		}
@@ -31,10 +48,12 @@ int Engine::Init(const char* title, int xPos, int yPos, int width, int height, i
 	else return false; // initalization failed.
 	m_fps = (Uint32)round(1.0 / (double)FPS * 1000); // Converts FPS into milliseconds, e.g. 16.67
 	m_keystates = SDL_GetKeyboardState(nullptr);
-	m_player.SetRekts( {0,0,72,126}, {50,350,72,126} ); // First {} is src rectangle, and second {} destination rect
+	m_player.SetRekts( {0,0,126,72}, {50,350,126,72} ); // First {} is src rectangle, and second {} destination rect
 	m_bg1.SetRekts( {0,0,1920,640}, {0,0,1920,640} );
 	m_bg2.SetRekts( {0,0,1920,640}, {1920,0,1920,640} );
 	cout << "Initialization successful!" << endl;
+	Mix_PlayMusic(m_music, -1); // 0, 1-n or -1 for infinate loopping.
+	Mix_VolumeMusic(50);	// 0-128.
 	m_running = true;
 	return true;
 }
@@ -58,8 +77,9 @@ void Engine::HandleEvents()
 			if (event.key.keysym.sym == ' ' && alive == true)
 			{
 				// spawns bullet
-				m_bullets.push_back(new Bullet({ m_player.GetDst()->x + 75, m_player.GetDst()->y + 56}));
+				m_bullets.push_back(new Bullet({ m_player.GetDst()->x + 90, m_player.GetDst()->y + 33 }));
 				m_bullets.shrink_to_fit();
+				Mix_PlayChannel(-1, m_shoot, 0); // -1 channel is the first avalible
 				cout << "New bullet vector capacity: " << m_bullets.capacity() << endl;
 			}
 		}
@@ -99,17 +119,75 @@ void Engine::Update()
 		m_player.GetDst()->x += m_speed / 1.5;
 
 	// enemy spawn
-	if (m_frameCtr == 150)
+	if (m_frameCtr == 150 || m_frameCtr == 300)
 	{
-		m_frameCtr = 0;
 		m_enemy.push_back(new Enemy({1100, rand() % 540 + 100 }));
 		m_enemy.shrink_to_fit();
 		cout << "New enemy vector capacity: " << m_enemy.capacity() << endl;
+	}
+
+	// Obstacle spawn
+	if (m_frameCtr == 300)
+	{
+		if ((rand() % 3 + 1) == 1)
+		{
+			m_frameCtr = 0;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+		}
+		else if ((rand() % 3 + 1) == 2)
+		{
+			m_frameCtr = 0;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			
+			
+		}
+		else if ((rand() % 3 + 1) == 3)
+		{
+			m_frameCtr = 0;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+			m_obsticle.push_back(new Obstacle({ 1100, rand() % 540 + 100 }));
+			m_obsticle.shrink_to_fit();
+			cout << "New obstacle vector capacity: " << m_obsticle.capacity() << endl;
+		}
 	}
 	else
 	{
 		m_frameCtr++;
 	}
+
+	// enemy shooting
+	for (int x = 0; x < m_enemy.size(); x++) {
+		if (m_frameCtr % 75 == 0) {
+			m_enemyBullets.push_back(new EnemyBullet({ m_enemy[x]->GetDst()->x , m_enemy[x]->GetDst()->y }));
+			m_enemyBullets.shrink_to_fit();
+			cout << "New enemy bullet vector capacity: " << m_enemyBullets.capacity() << endl;
+			if (alive == true) {
+				Mix_PlayChannel(-1, m_eShoot, 0);
+			}
+		}
+	}
+
 
 	// bullet update
 	for (int i = 0 ; i< m_bullets.size(); i++){
@@ -121,27 +199,36 @@ void Engine::Update()
 		m_enemy[x]->Update();
 	}
 
-	// check for enemy going off screen
-	for (int x = 0; x < m_enemy.size(); x++)
-	{
-		if (m_enemy[x]->GetDst()->x < -100)
-		{
-			delete m_enemy[x];	// flag for reallocation
-			m_enemy[x] = nullptr;	//	wrangle your dangle
-			m_enemy.erase(m_enemy.begin() + x);
-			m_enemy.shrink_to_fit();	//	reduces capacity to size
-			break;
-		}
+	// enemy bullet update
+	for (int b = 0; b < m_enemyBullets.size(); b++) {
+		m_enemyBullets[b]->Update();
 	}
 
-	// enemy shooting
-	for (int x = 0; x < m_enemy.size(); x++)
+	// obstacle update
+	for (int i = 0; i < m_obsticle.size(); i++) {
+		m_obsticle[i]->Update();
+	}
+
+	// explosion update
+	if (alive == false) {
+		m_explode.Animate();
+	}
+
+	//oblstical hit enemy
+	for (int i = 0; i < m_obsticle.size(); i++)
 	{
-		if (m_frameCtr % 50 == 0)
+		if (SDL_HasIntersection(m_obsticle[i]->GetDst(), m_player.GetDst()))
 		{
-			m_enemyBullets.push_back(new EnemyBullet({}));
-			m_enemyBullets.shrink_to_fit();
-			cout << "New enemy bullet vector capacity: " << m_enemyBullets.capacity() << endl;
+			SDL_DestroyTexture(m_pTexture);
+			if (alive == true) {
+				cout << endl;
+				cout << "----====||||	Crash! Died to Bottle Cap.	||||====----\n";
+				cout << endl;
+				m_explode.ResetSprite();
+				m_explode.SetRects({ 0,0,128,128 }, { m_player.GetDst()->x - 50,m_player.GetDst()->y - 75, 200,200 });
+				Mix_PlayChannel(-1, m_death, 0);
+				alive = false;
+			}
 		}
 	}
 
@@ -149,7 +236,6 @@ void Engine::Update()
 	for (int x = 0; x < m_enemy.size(); x++){
 		for (int i = 0; i < m_bullets.size(); i++){
 			if (SDL_HasIntersection(m_bullets[i]->GetDst(), m_enemy[x]->GetDst())){
-				cout << "hit!\n";
 				//delete enemy
 				delete m_enemy[x];	// flag for reallocation
 				m_enemy[x] = nullptr;	//	wrangle your dangle
@@ -160,6 +246,8 @@ void Engine::Update()
 				m_bullets[i] = nullptr;
 				m_bullets.erase(m_bullets.begin() + i);
 				m_bullets.shrink_to_fit();
+				cout << "----====||||	hit!	||||====----\n";
+				Mix_PlayChannel(-1, m_eDeath, 0);
 				break;
 			}
 		}
@@ -169,8 +257,38 @@ void Engine::Update()
 	for (int x = 0; x < m_enemy.size(); x++) {
 		if (SDL_HasIntersection(m_enemy[x]->GetDst(), m_player.GetDst())){
 			SDL_DestroyTexture(m_pTexture);
-			alive = false;
+			if (alive == true) {
+				cout << endl;
+				cout << "----====||||	Crash! Died to Ghost.	||||====----\n";
+				cout << endl;
+				m_explode.ResetSprite();
+				m_explode.SetRects({ 0,0,128,128 }, { m_player.GetDst()->x - 50,m_player.GetDst()->y - 75, 200,200 });
+				Mix_PlayChannel(-1, m_death, 0);
+				alive = false;
+			}
 		}
+	}
+
+	// enemy bullet hit player
+	for (int i = 0; i < m_enemyBullets.size(); i++) {
+		if (SDL_HasIntersection(m_player.GetDst(), m_enemyBullets[i]->GetDst())) {
+			SDL_DestroyTexture(m_pTexture);
+			if (alive == true) {
+				cout << endl;
+				cout << "----====||||	Destroyed! Died to fire ball.	||||====----\n";
+				cout << endl;
+				m_explode.ResetSprite();
+				m_explode.SetRects({ 0,0,128,128 }, { m_player.GetDst()->x - 50,m_player.GetDst()->y - 75, 200,200 });
+				Mix_PlayChannel(-1, m_death, 0);
+				alive = false;
+			}
+		}
+	}
+
+	// check for death
+	if (alive == false)
+	{
+			Mix_PauseMusic();
 	}
 
 	// check for bullets going off screen
@@ -186,15 +304,41 @@ void Engine::Update()
 		}
 	}
 
+	// check for enemy going off screen
+	for (unsigned x = 0; x < m_enemy.size(); x++)
+	{
+		if (m_enemy[x]->GetDst()->x < -100)
+		{
+			delete m_enemy[x];	// flag for reallocation
+			m_enemy[x] = nullptr;	//	wrangle your dangle
+			m_enemy.erase(m_enemy.begin() + x);
+			m_enemy.shrink_to_fit();	//	reduces capacity to size
+			break;
+		}
+	}
+
 	// check for enemy bullets going off screen
 	for (unsigned i = 0; i < m_enemyBullets.size(); i++)
 	{
-		if (m_enemyBullets[i]->GetEnemy()->x <= -50)
+		if (m_enemyBullets[i]->GetDst()->x <= -100)
 		{
 			delete m_enemyBullets[i];
 			m_enemyBullets[i] = nullptr;
 			m_enemyBullets.erase(m_enemyBullets.begin() + i);
 			m_enemyBullets.shrink_to_fit();
+			break;
+		}
+	}
+
+	//check for enemies going off screen
+	for (unsigned i = 0; i < m_obsticle.size(); i++)
+	{
+		if (m_obsticle[i]->GetDst()->x <= -100)
+		{
+			delete m_obsticle[i];
+			m_obsticle[i] = nullptr;
+			m_obsticle.erase(m_obsticle.begin() + i);
+			m_obsticle.shrink_to_fit();
 			break;
 		}
 	}
@@ -215,15 +359,28 @@ void Engine::Render()
 		SDL_RenderCopyEx(m_pRenderer, m_pEtexture, m_enemy[x]->GetSrc(), m_enemy[x]->GetDst(), 0, 0 ,SDL_FLIP_NONE);
 	}
 
+	// rsnder enemy bullet
 	for (int i = 0; i < m_enemyBullets.size(); i++) {
-		m_enemyBullets[i]->Render(m_pRenderer);
+		SDL_RenderCopyEx(m_pRenderer, m_pEBtexture, m_enemyBullets[i]->GetSrc(), m_enemyBullets[i]->GetDst(), 0, 0, SDL_FLIP_NONE);
 	}
 
+	// render bullet
 	for (int i = 0; i < m_bullets.size(); i++) {
 		SDL_RenderCopyEx(m_pRenderer, m_pBtexture, m_bullets[i]->GetSrc(), m_bullets[i]->GetDst(), 0, 0, SDL_FLIP_HORIZONTAL);
 	}
 
-	SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 90, 0, SDL_FLIP_NONE);
+	// render obstacle
+	for (int i = 0; i < m_obsticle.size(); i++) {
+		SDL_RenderCopyEx(m_pRenderer, m_pOtexture, m_obsticle[i]->GetSrc(), m_obsticle[i]->GetDst(), m_obsticle[i]->angle, 0, SDL_FLIP_NONE);
+	}
+
+	if (alive == false)
+	{
+		SDL_RenderCopy(m_pRenderer, m_pEXtexture, m_explode.GetSrc(), m_explode.GetDst());
+	}
+
+	// rander player
+	SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 0, NULL, SDL_FLIP_NONE);
 	//SDL_RenderCopyEx(m_pRenderer, m_pTexture, m_player.GetSrc(), m_player.GetDst(), 90.0, NULL, SDL_FLIP_NONE);
 
 	SDL_RenderPresent(m_pRenderer); // Flip buffers - send data to window.
@@ -266,6 +423,7 @@ int Engine::Run()
 
 void Engine::Clean()
 {
+	// de allocate bullets
 	cout << "Cleaning engine..." << endl;
 	for (unsigned i = 0; i < m_bullets.size(); i++)
 	{
@@ -274,6 +432,8 @@ void Engine::Clean()
 	}
 	m_bullets.clear();	//	wipe all elements
 	m_bullets.shrink_to_fit();	//	reduces capacity to size
+
+	// de allocate enemy bullets
 	for (unsigned i = 0; i < m_enemyBullets.size(); i++)
 	{
 		delete m_enemyBullets[i];
@@ -281,6 +441,8 @@ void Engine::Clean()
 	}
 	m_enemyBullets.clear();
 	m_enemyBullets.shrink_to_fit();
+
+	// de allocate enemy
 	for (unsigned x = 0; x < m_enemy.size(); x++)
 	{
 		delete m_enemy[x];
@@ -288,11 +450,24 @@ void Engine::Clean()
 	}
 	m_enemy.clear();
 	m_enemy.shrink_to_fit();
+
+	// de allocate obsticles
+	for (unsigned o = 0; o < m_enemy.size(); o++)
+	{
+		delete m_obsticle[o];
+		m_obsticle[o] = nullptr;
+	}
+	m_obsticle.clear();
+	m_obsticle.shrink_to_fit();
+
 	SDL_DestroyRenderer(m_pRenderer);
 	SDL_DestroyWindow(m_pWindow);
-	SDL_DestroyTexture(m_pTexture);
-	SDL_DestroyTexture(m_pBGtexture);
-	SDL_DestroyTexture(m_pEtexture);
+	SDL_DestroyTexture(m_pTexture);	// player
+	SDL_DestroyTexture(m_pBGtexture);	// background
+	SDL_DestroyTexture(m_pEtexture);	// enemy texture
+	SDL_DestroyTexture(m_pEBtexture); // fireball
+	SDL_DestroyTexture(m_pBtexture);	// bullets
+	SDL_DestroyTexture(m_pOtexture);	// Obsticles
 	IMG_Quit();
 	SDL_Quit();
 }

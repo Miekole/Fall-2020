@@ -148,10 +148,20 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="img\background.png" />
+    <Image Include="img\bottleCap.png" />
     <Image Include="img\bullet.png" />
+    <Image Include="img\explosion.png" />
+    <Image Include="img\FireBall.png" />
     <Image Include="img\ghost.png" />
-    <Image Include="img\Sonic.png" />
     <Image Include="img\sprite.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="aud\die1.wav" />
+    <Media Include="aud\enemyDie1.wav" />
+    <Media Include="aud\enemyDie2.wav" />
+    <Media Include="aud\FightTheme.mp3" />
+    <Media Include="aud\shoot1.wav" />
+    <Media Include="aud\shoot2.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
