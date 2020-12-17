@@ -403,7 +403,13 @@ void ItemStage()
 
 int main()
 {
-	do {
+	/*do {
 		Menu();
-	} while (ext != true);
+	} while (ext != true);*/
+
+
+	int num = 8;
+	cout << --num << " ";
+	cout << num++ << " ";
+	cout << num;
 }
